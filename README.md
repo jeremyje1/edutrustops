@@ -1,100 +1,109 @@
-# EduTrustOps Platform
+## EduTrustOps™ Platform
 
-This repository contains a starter implementation of **EduTrustOps™**, a modular compliance and trust operations platform for K‑12 and higher‑education institutions. It is designed to be deployed as a Next.js 14 application with PostgreSQL, Prisma for the ORM and Stripe for subscription management. The site includes marketing pages, a demo request form, pricing with self‑service checkout and a Stripe webhook that provisions a tenant in the database on successful checkout.
+Turnkey Trust Operations for education institutions: Accessibility (ADA Title II / WCAG 2.1 AA), Cybersecurity (NIST CSF 2.0 + FCC Pilot alignment), AI Governance, and Financial Value Transparency / Gainful Employment (FVT/GE) evidence—unified in one multi‑tenant platform.
 
-## Project Structure
+### A. Value Proposition (Hero)
+"The turnkey way for districts and colleges to prove digital accessibility, reduce cyber risk, govern AI, and meet FVT/GE deadlines—with audit‑ready evidence, every day."
 
+### B. Site Structure & Copy
+Pages: Home, Solutions, Platform, Pricing, Resources, Trust Center, Book a Demo. Components: Hero, ValueClocks (regulatory drivers), OpsModules, Evidence Binder overview, Final CTA.
+
+### C. Packaging & Pricing (Sample Tiers)
+- Core: All four modules + baseline + quarterly board packet.
+- Pro: Multi‑org, SSO, ticketing sync, VPAT credits.
+- Enterprise: Advanced integrations, residency options, premium SLA.
+Add‑ons: PDF remediation, FCC Pilot application support, FVT/GE NSLDS QA.
+
+### D. Operating Model & Automation
+90‑Day Install: Inventory → Baseline score → Backlog → Evidence Binder live → Exec packet.
+Automation Flow: Lead form → `Lead` (Prisma) → Stripe Checkout → Webhook provisions `Tenant` (tier, metadata) → (Future) connectors gather evidence → Trust Score dashboards.
+
+### E. Technical Architecture
+Stack: Next.js App Router, Prisma + Postgres, Stripe billing, modular React components, JSON‑LD SEO.
+Key Files:
+- `prisma/schema.prisma`: `Tenant` + `Lead` models.
+- `src/app/api/checkout`: Stripe session creation.
+- `src/app/api/stripe/webhook`: Tenant provisioning & tier update.
+- `src/app/api/demo`: Lead capture.
+- `src/lib/stripeHandlers.ts`: Provisioning helpers.
+
+### F. Data Governance & Compliance Mapping
+- Accessibility: WCAG 2.1 AA evidence for ADA Title II phased deadlines (2026/27).
+- Cyber: Posture mapping to NIST CSF 2.0; FCC Pilot control tagging.
+- AI Governance: Policy registry, syllabus clauses, tool approvals aligned with U.S. ED guidance.
+- FVT/GE: CIP→SOC mapping, NSLDS prep & QA, disclosure snippet generation, threshold alerts.
+Controls: Data minimization, encryption in transit/at rest (in infra), future RBAC & retention policies.
+
+### G. Sales Kit & GTM (Condensed)
+Pitch: Three immovable clocks—ADA Title II, FCC cyber funding momentum, FVT/GE transparency deadlines—demand continuous evidence.
+Differentiators: Unified Evidence Binder, 90‑day operationalization, modular expansion, automated baseline/backlog, exportable audit packets.
+Proof Assets (planned): Accessibility snapshot teaser, Trust Score sample dashboard, redacted Evidence Binder export.
+
+### H. 90‑Day Rollout Plan (High-Level)
+Wks 1‑2: Inventory & baseline scans → initial Trust Score.
+Wks 3‑4: Publish prioritized backlog & ownership matrix; Evidence Binder categories.
+Wks 5‑8: Automate scans; AI registry + syllabus generator; cyber control mapping.
+Wks 9‑10: FVT/GE data prep tasks, program threshold watchlist; draft board packet.
+Wks 11‑12: Incident tabletop & accessibility regression drill; finalize executive packet & ROI summary.
+
+### Project Structure
 ```
 edutrustops/
-├── package.json           # npm scripts and dependencies
-├── tsconfig.json          # TypeScript configuration
-├── next.config.js         # Next.js configuration (App Router enabled)
+├── package.json
+├── tsconfig.json
+├── next.config.js
 ├── prisma/
-│   └── schema.prisma      # Database schema for Prisma
+│   └── schema.prisma
 ├── src/
-│   ├── app/               # Next.js app directory
-│   │   ├── layout.tsx     # Root layout with navigation
-│   │   ├── globals.css    # Global styles
-│   │   ├── page.tsx       # Home page (hero + metrics)
-│   │   ├── solutions/     # Solutions subpage
-│   │   ├── platform/      # Platform subpage
-│   │   ├── pricing/       # Pricing page with subscription buttons
-│   │   ├── resources/     # Resources page
-│   │   ├── trust-center/  # Security/privacy/accessibility posture
-│   │   ├── book-a-demo/   # Demo request form
-│   │   └── api/           # API routes (checkout, webhook, demo)
-│   └── lib/               # Server‑side helpers (Prisma, Stripe handlers)
-│       ├── prisma.ts      # Singleton Prisma client
-│       └── stripeHandlers.ts # Tenant provisioning based on Stripe events
-└── .env.example           # Environment variables template
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   ├── globals.css
+│   │   ├── page.tsx
+│   │   ├── accessibility-snapshot/
+│   │   │   └── page.tsx
+│   │   ├── solutions/
+│   │   ├── platform/
+│   │   ├── pricing/
+│   │   ├── resources/
+│   │   ├── trust-center/
+│   │   ├── book-a-demo/
+│   │   └── api/
+│   │       ├── snapshot/route.ts (lead capture for accessibility snapshot)
+│   │       ├── bi/token/route.ts (Power BI embed token stub)
+│   └── lib/
+│       ├── prisma.ts
+│       └── stripeHandlers.ts
+│       └── sitemap.ts (public sitemap ingestion helper)
+├── src/components/Footer.tsx
+├── src/rules/ticketing.ts
 ```
 
-## Running locally
+### Running Locally
+1. Install dependencies:
+```bash
+npm install
+```
+2. Configure environment variables (`.env`).
+3. Run Prisma:
+```bash
+npx prisma generate
+npx prisma migrate dev --name init
+```
+4. Start dev server:
+```bash
+npm run dev
+```
 
-1. **Install dependencies** (requires Node.js ≥ 18 and npm):
+### Deployment (Vercel)
+Configure ENV vars, deploy, add Stripe webhook (`/api/stripe/webhook`), map domain & verify SSL.
 
-   ```bash
-   npm install
-   ```
+### Future Enhancements
+- Auth & SSO (Clerk/Auth0; SAML for Enterprise)
+- Evidence artefact storage (S3) & export service
+- Background agents (crawler, control scanner, AI policy engine)
+- Trust Score computation microservice
+- Notification system (email/Slack)
+- Legal & policy pages (Privacy, Terms, DPA, Accessibility Statement)
 
-2. **Provision a PostgreSQL database**. You can use Railway, Neon or any hosted service. Create a database named `edutrustops` and obtain its connection string.
-
-3. **Configure environment variables**. Copy `.env.example` to `.env` and replace the placeholder values:
-
-   ```bash
-   cp .env.example .env
-   # Edit .env with your database URL, Stripe keys and product IDs
-   ```
-
-   - `DATABASE_URL` – connection string for your PostgreSQL instance
-   - `STRIPE_SECRET_KEY` – secret key for your Stripe account
-   - `STRIPE_WEBHOOK_SECRET` – webhook signing secret from your Stripe dashboard
-   - `NEXT_PUBLIC_STRIPE_PRICE_CORE`, `NEXT_PUBLIC_STRIPE_PRICE_PRO`, `NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE` – price IDs for the Core/Pro/Enterprise subscriptions
-   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` – your Stripe publishable key (used by client)
-   - `NEXT_PUBLIC_BASE_URL` – the base URL of your deployed app (e.g. `https://edutrustops.org`)
-
-4. **Generate the Prisma client and run migrations**:
-
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev --name init
-   ```
-
-   This will create the required `Tenant` table in your database.
-
-5. **Start the development server**:
-
-   ```bash
-   npm run dev
-   ```
-
-6. Navigate to `http://localhost:3000` in your browser to see the site.
-
-## Deploying to Vercel
-
-1. Create a new GitHub repository for this code (if you haven’t already). Commit and push the contents of this directory to GitHub.
-
-2. Sign in to [Vercel](https://vercel.com/) and import your repository. When prompted, set the environment variables listed above in the Vercel dashboard.
-
-3. Point your domain (`edutrustops.org`) to Vercel by updating DNS records. Vercel will provision an SSL certificate automatically.
-
-4. Configure the Stripe webhook:
-
-   - In your Stripe dashboard, add an endpoint with the URL `https://edutrustops.org/api/stripe/webhook`.
-   - Subscribe to `checkout.session.completed` and `customer.subscription.updated` events.
-   - Copy the webhook signing secret into your `STRIPE_WEBHOOK_SECRET` environment variable on Vercel.
-
-5. After deployment, the pricing buttons will redirect customers to Stripe checkout. When checkout completes, the webhook creates or updates a `Tenant` record in your database.
-
-## Next steps
-
-This starter provides the marketing site, subscription flow and basic data model. The next phase of development should implement the following features:
-
-- **User Authentication & SSO**: integrate an auth provider like Clerk or Auth0 for identity management. Use SAML/OIDC for enterprise plans.
-- **Agents & Background Jobs**: implement the accessibility crawler, cyber baseline auditor, AI policy assistant and FVT/GE reporter described in the product blueprint. These can be deployed as serverless functions or AWS Lambda scheduled jobs.
-- **Evidence Binder**: design a data model for artefacts and narratives, implement storage of evidence (e.g. S3) and export as PDF/HTML.
-- **Dashboard UI**: build dashboards with charts and Power BI embeds to display the Trust Score and module metrics.
-- **CRM Integration**: send demo requests to a CRM or email service for follow‑up.
-- **Legal Pages**: add full Privacy Policy, Terms of Service, Data Processing Addendum and Accessibility Statement.
-
-With these extensions, EduTrustOps™ will be a fully operational, automated platform ready for national K‑12 and higher‑education clients.# edutrustops
+### License
+Proprietary – All rights reserved.
