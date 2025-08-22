@@ -4,16 +4,22 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2022-11-15' });
 
 export async function POST(req: Request) {
-  const { tier, institution_name } = await req.json();
-  // Map tiers to price IDs defined in environment variables
-  const priceMap: Record<string, string | undefined> = {
+  const { tier, institution_name, billing } = await req.json();
+  
+  // Map tiers to price IDs based on billing period
+  const priceMap: Record<string, string | undefined> = billing === 'monthly' ? {
+    core: process.env.NEXT_PUBLIC_STRIPE_PRICE_CORE_MONTHLY,
+    pro: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY,
+    enterprise: process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_MONTHLY,
+  } : {
     core: process.env.NEXT_PUBLIC_STRIPE_PRICE_CORE,
     pro: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO,
     enterprise: process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE,
   };
+  
   const priceId = priceMap[tier];
   if (!priceId) {
-    return new NextResponse('Invalid tier', { status: 400 });
+    return new NextResponse('Invalid tier or billing period', { status: 400 });
   }
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',

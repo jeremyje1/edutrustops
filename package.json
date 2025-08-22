@@ -10,22 +10,23 @@
     "cy:open": "cypress open"
   },
   "dependencies": {
+    "@prisma/client": "4.10.1",
+    "dotenv": "^17.2.1",
+    "jsonwebtoken": "9.0.2",
     "next": "14.0.3",
+    "pg": "8.11.1",
+    "prisma": "4.10.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "@prisma/client": "4.10.1",
-    "prisma": "4.10.1",
-    "pg": "8.11.1",
-  "stripe": "11.3.0",
-  "jsonwebtoken": "9.0.2"
+    "stripe": "11.3.0"
   },
   "devDependencies": {
-    "typescript": "5.4.4",
     "@types/node": "20.10.3",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "cypress": "13.8.1",
     "eslint": "8.56.0",
-  "eslint-config-next": "14.0.3",
-  "cypress": "13.8.1"
+    "eslint-config-next": "14.0.3",
+    "typescript": "5.4.4"
   }
 }
