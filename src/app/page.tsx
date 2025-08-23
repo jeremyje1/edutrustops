@@ -4,6 +4,7 @@ import { ValueClocks } from '@/components/ValueClocks';
 import { OpsModules } from '@/components/OpsModules';
 
 export default function HomePage() {
+  // Platform homepage
   return (
     <>
       <Hero />
