@@ -5,15 +5,15 @@ export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const url = request.nextUrl.clone();
 
-  // Redirect from edutrustops.org to www.edutrustops.org
-  if (hostname === 'edutrustops.org') {
-    url.host = 'www.edutrustops.org';
+  // Redirect from www.edutrustops.org to platform.edutrustops.org
+  if (hostname === 'www.edutrustops.org') {
+    url.host = 'platform.edutrustops.org';
     return NextResponse.redirect(url, 301);
   }
 
-  // Redirect platform.edutrustops.org to www.edutrustops.org
-  if (hostname === 'platform.edutrustops.org' || hostname.startsWith('platform.')) {
-    url.host = 'www.edutrustops.org';
+  // Redirect from edutrustops.org to platform.edutrustops.org
+  if (hostname === 'edutrustops.org') {
+    url.host = 'platform.edutrustops.org';
     return NextResponse.redirect(url, 301);
   }
 

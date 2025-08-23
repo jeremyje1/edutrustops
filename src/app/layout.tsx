@@ -4,13 +4,13 @@ import type { ReactNode } from 'react';
 import { Footer } from '@/components/Footer';
 
 export const metadata = {
-  metadataBase: new URL('https://www.edutrustops.org'),
+  metadataBase: new URL('https://platform.edutrustops.org'),
   title: 'EduTrustOps™ | Accessibility, Cyber, AI Governance & FVT/GE Operations',
   description: 'Turnkey Trust Operations platform for districts and colleges: ADA Title II accessibility, NIST CSF cyber baseline, AI governance, and FVT/GE program transparency with an audit-ready Evidence Binder.',
   openGraph: {
     title: 'EduTrustOps™ | Trust Operations for Education',
     description: 'Prove accessibility, reduce cyber risk, govern AI, and meet FVT/GE deadlines in one platform.',
-    url: 'https://www.edutrustops.org',
+    url: 'https://platform.edutrustops.org',
     siteName: 'EduTrustOps',
     locale: 'en_US',
     type: 'website',
@@ -40,7 +40,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'EduTrustOps',
-              url: 'https://www.edutrustops.org',
+              url: 'https://platform.edutrustops.org',
               description: 'Turnkey Trust Operations for education: accessibility, cyber, AI governance, FVT/GE.',
               sameAs: [],
               productSupported: 'K-12 Districts, Community Colleges, Universities',
