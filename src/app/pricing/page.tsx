@@ -149,6 +149,7 @@ export default function PricingPage() {
           return (
             <div
               key={tier.name}
+              id={tier.name.toLowerCase()}
               style={{
                 border: tier.highlighted ? '2px solid #4f46e5' : '1px solid #e5e7eb',
                 borderRadius: '1rem',
@@ -230,7 +231,7 @@ export default function PricingPage() {
       </div>
 
       {/* Add-ons Section */}
-      <section style={{ marginBottom: '4rem' }}>
+      <section id="add-ons" style={{ marginBottom: '4rem' }}>
         <h2 style={{ fontSize: '2rem', marginBottom: '2rem', textAlign: 'center' }}>Power-ups & Add-ons</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
           {addOns.map((addon) => (
@@ -249,7 +250,7 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ / Details */}
-      <section style={{ background: '#f9fafb', padding: '3rem 2rem', borderRadius: '1rem' }}>
+      <section id="details" style={{ background: '#f9fafb', padding: '3rem 2rem', borderRadius: '1rem' }}>
         <h2 style={{ fontSize: '1.75rem', marginBottom: '2rem' }}>Pricing Details</h2>
         <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
           <div>

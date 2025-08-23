@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# EduTrustOps Supabase Environment Variables
+# Copy these values to set up your environment
+
+echo "🔐 Supabase Environment Variables for EduTrustOps"
+echo "=================================================="
+echo ""
+
+echo "📡 Supabase Configuration:"
+echo "NEXT_PUBLIC_SUPABASE_URL=https://pqugtxjutiswgemjyuch.supabase.co"
+echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxdWd0eGp1dGlzd2dlbWp5dWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5ODI5NTMsImV4cCI6MjA3MTU1ODk1M30.y1f8g6U2icHuah6V8a3AgvZzhkW0SReROwyxPIvfQdk"
+echo ""
+
+echo "🗄️ Database Configuration (replace [PASSWORD] with your actual password):"
+echo "DATABASE_URL='postgresql://postgres:[PASSWORD]@db.pqugtxjutiswgemjyuch.supabase.co:5432/postgres?pgbouncer=true'"
+echo "DIRECT_URL='postgresql://postgres:[PASSWORD]@db.pqugtxjutiswgemjyuch.supabase.co:5432/postgres'"
+echo ""
+
+echo "🌐 Domain Configuration:"
+echo "NEXT_PUBLIC_BASE_URL=https://platform.edutrustops.org"
+echo "CANONICAL_HOST=platform.edutrustops.org"
+echo "FALLBACK_HOST=edutrustops.vercel.app"
+echo ""
+
+echo "📋 To set these in Vercel, run these commands:"
+echo "============================================="
+echo ""
+echo "# Supabase"
+echo "vercel env add NEXT_PUBLIC_SUPABASE_URL"
+echo "# When prompted, enter: https://pqugtxjutiswgemjyuch.supabase.co"
+echo ""
+echo "vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY"
+echo "# When prompted, enter: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxdWd0eGp1dGlzd2dlbWp5dWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5ODI5NTMsImV4cCI6MjA3MTU1ODk1M30.y1f8g6U2icHuah6V8a3AgvZzhkW0SReROwyxPIvfQdk"
+echo ""
+echo "# Database (get password from Supabase dashboard)"
+echo "vercel env add DATABASE_URL"
+echo "# When prompted, enter: postgresql://postgres:[PASSWORD]@db.pqugtxjutiswgemjyuch.supabase.co:5432/postgres?pgbouncer=true"
+echo ""
+echo "vercel env add DIRECT_URL"
+echo "# When prompted, enter: postgresql://postgres:[PASSWORD]@db.pqugtxjutiswgemjyuch.supabase.co:5432/postgres"
+echo ""
+echo "# Domain"
+echo "vercel env add NEXT_PUBLIC_BASE_URL"
+echo "# When prompted, enter: https://platform.edutrustops.org"
+echo ""
+echo "vercel env add CANONICAL_HOST"
+echo "# When prompted, enter: platform.edutrustops.org"
+echo ""
+echo "vercel env add FALLBACK_HOST"
+echo "# When prompted, enter: edutrustops.vercel.app"
+echo ""
+
+echo "🎯 Get your database password from:"
+echo "https://supabase.com/dashboard/project/pqugtxjutiswgemjyuch/settings/database"
