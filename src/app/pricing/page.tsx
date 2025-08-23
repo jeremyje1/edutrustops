@@ -78,6 +78,8 @@ export default function PricingPage() {
   const [loadingTier, setLoadingTier] = useState<string>('');
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('annual');
 
+  // Fixed fragment navigation for pricing tiers
+
   const subscribe = async (tier: string) => {
     setLoadingTier(tier);
     try {
