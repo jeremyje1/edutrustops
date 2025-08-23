@@ -21,7 +21,7 @@ export function Hero() {
         </div>
         <div className="cta-buttons" aria-label="Primary actions">
           <Link href="/book-a-demo" className="primary-cta">Book a 15‑Minute Readiness Call</Link>
-          <Link href="/resources" className="secondary">See Evidence Binder Sample</Link>
+          <Link href="/evidence-binder" className="secondary">See Evidence Binder Sample</Link>
         </div>
       </div>
     </section>

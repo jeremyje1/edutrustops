@@ -1,3 +1,11 @@
 User-agent: *
 Allow: /
-Sitemap: https://platform.edutrustops.org/sitemap.xml
+
+# Sitemap
+Sitemap: https://www.edutrustops.org/sitemap.xml
+
+# Disallow admin or API routes
+Disallow: /api/
+Disallow: /_next/
+Disallow: /success
+Disallow: /upgrade
