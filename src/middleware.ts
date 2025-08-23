@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { updateSession } from './lib/auth';
 
 // Environment driven host settings.
 // CANONICAL_HOST: desired primary host (e.g. platform.edutrustops.org)
@@ -22,7 +23,7 @@ function hostAllowed(host: string) {
   return ADDITIONAL_ALLOWED_HOST_PATTERNS.some((re) => re.test(host));
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
   const url = request.nextUrl.clone();
 
@@ -52,7 +53,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  return NextResponse.next();
+  // Update Supabase session for authenticated routes
+  return await updateSession(request);
 }
 
 export const config = {

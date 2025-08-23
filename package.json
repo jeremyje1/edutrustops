@@ -7,10 +7,16 @@
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "cypress run",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:reset": "prisma migrate reset --force",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@prisma/client": "4.10.1",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.56.0",
     "dotenv": "^17.2.1",
     "jsonwebtoken": "9.0.2",
     "next": "14.0.3",

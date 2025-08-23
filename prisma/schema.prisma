@@ -1,26 +1,52 @@
-// Prisma schema for the EduTrustOps platform.
-// Defines a minimal Tenant model used during automated provisioning via Stripe webhook.
+// Enhanced Prisma schema for EduTrustOps platform with Supabase integration
+// Supports multi-tenant education compliance operations
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // For connection pooling
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-model Tenant {
-  id                String   @id @default(uuid())
-  name              String
-  stripeCustomerId  String   @unique
-  stripeSubscriptionId String? @unique
-  tier              String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+// Core institutional entities
+model Institution {
+  id              String   @id @default(cuid())
+  name            String
+  domain          String?  @unique // e.g. "university.edu"
+  tier            Tier     @default(CORE)
+  enrollmentCount Int?     @map("enrollment_count")
+  region          String?
+  contactEmail    String?  @map("contact_email")
+  
+  // Legacy Stripe integration (keeping for migration)
+  stripeCustomerId     String? @unique @map("stripe_customer_id")
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  
+  // Supabase Auth integration
+  authUsers       AuthUser[]
+  
+  // Trust Operations modules
+  trustScores     TrustScore[]
+  evidenceBinder  EvidenceItem[]
+  accessibilityScans AccessibilityScan[]
+  cyberAssessments CyberAssessment[]
+  aiGovernance    AIGovernanceItem[]
+  fvtGeTracking   FVTGEItem[]
+  
+  // Subscription & billing
+  subscriptionTier SubscriptionTier?
+  billingCycle    BillingCycle @default(ANNUAL)
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  @@map("institutions")
 }
 
-// Captures inbound marketing & sales qualified leads from forms and other ingestion points.
+// Keeps existing Lead model for marketing continuity
 model Lead {
   id           String   @id @default(uuid())
   name         String?
@@ -32,4 +58,309 @@ model Lead {
   status       String   @default("new") // new | contacted | qualified | disqualified | converted
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// Legacy Tenant model (will migrate to Institution)
+model Tenant {
+  id                String   @id @default(uuid())
+  name              String
+  stripeCustomerId  String   @unique
+  stripeSubscriptionId String? @unique
+  tier              String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AuthUser {
+  id           String      @id @default(cuid())
+  supabaseId   String      @unique @map("supabase_id") // Links to Supabase auth.users
+  email        String      @unique
+  role         UserRole    @default(USER)
+  institutionId String     @map("institution_id")
+  institution  Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  
+  // Profile
+  firstName    String?     @map("first_name")
+  lastName     String?     @map("last_name")
+  department   String?
+  lastLoginAt  DateTime?   @map("last_login_at")
+  
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  
+  @@map("auth_users")
+}
+
+// Trust Score tracking
+model TrustScore {
+  id            String      @id @default(cuid())
+  institutionId String      @map("institution_id")
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  
+  // Overall scores (0-100)
+  overallScore      Int     @map("overall_score")
+  accessibilityScore Int    @map("accessibility_score")
+  cyberScore        Int     @map("cyber_score")
+  aiGovernanceScore Int     @map("ai_governance_score")
+  fvtGeScore        Int     @map("fvt_ge_score")
+  
+  // Metadata
+  calculatedAt  DateTime    @default(now()) @map("calculated_at")
+  scoringRules  Json?       @map("scoring_rules") // Store rule version/details
+  
+  @@map("trust_scores")
+}
+
+// Evidence Binder system
+model EvidenceItem {
+  id            String         @id @default(cuid())
+  institutionId String         @map("institution_id")
+  institution   Institution    @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  
+  // Evidence classification
+  category      EvidenceCategory
+  subcategory   String?
+  title         String
+  description   String?
+  
+  // File/content
+  fileUrl       String?        @map("file_url") // Supabase Storage URL
+  fileType      String?        @map("file_type") // mime type
+  fileSize      Int?           @map("file_size") // bytes
+  content       String?        // Text content for searchability
+  metadata      Json?          // Flexible evidence-specific data
+  
+  // Compliance mapping
+  trustScoreImpact Decimal?    @map("trust_score_impact")
+  complianceFrameworks String[] @map("compliance_frameworks") // ["ADA", "NIST_CSF", "FVT_GE"]
+  
+  // Audit trail
+  generatedBy   String?        @map("generated_by") // automated vs manual
+  validatedAt   DateTime?      @map("validated_at")
+  expiresAt     DateTime?      @map("expires_at")
+  
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  
+  @@map("evidence_items")
+}
+
+// Accessibility Operations
+model AccessibilityScan {
+  id            String      @id @default(cuid())
+  institutionId String      @map("institution_id")
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  
+  // Scan details
+  scanType      ScanType    @map("scan_type") // WEB, LMS, DOCUMENT
+  targetUrl     String?     @map("target_url")
+  targetDescription String? @map("target_description")
+  
+  // WCAG Results
+  wcagLevel     WCAGLevel   @map("wcag_level") // A, AA, AAA
+  passedChecks  Int         @map("passed_checks")
+  failedChecks  Int         @map("failed_checks")
+  warningChecks Int         @map("warning_checks")
+  
+  // Detailed results
+  issuesSummary Json?       @map("issues_summary")
+  reportUrl     String?     @map("report_url") // Supabase Storage
+  
+  scanStartedAt DateTime    @map("scan_started_at")
+  scanCompletedAt DateTime? @map("scan_completed_at")
+  
+  @@map("accessibility_scans")
+}
+
+// Cyber Security Operations
+model CyberAssessment {
+  id            String      @id @default(cuid())
+  institutionId String      @map("institution_id")
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  
+  // NIST CSF Framework
+  framework     String      @default("NIST_CSF_2.0")
+  
+  // Control assessments
+  identifyScore     Int     @map("identify_score")
+  protectScore      Int     @map("protect_score")
+  detectScore       Int     @map("detect_score")
+  respondScore      Int     @map("respond_score")
+  recoverScore      Int     @map("recover_score")
+  governScore       Int     @map("govern_score") // CSF 2.0 addition
+  
+  // Implementation details
+  controlsImplemented Json  @map("controls_implemented")
+  riskRegister       Json?  @map("risk_register")
+  
+  assessedAt    DateTime    @default(now()) @map("assessed_at")
+  assessedBy    String?     @map("assessed_by")
+  validUntil    DateTime?   @map("valid_until")
+  
+  @@map("cyber_assessments")
+}
+
+// AI Governance Operations
+model AIGovernanceItem {
+  id            String         @id @default(cuid())
+  institutionId String         @map("institution_id")
+  institution   Institution    @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  
+  // Governance type
+  itemType      AIGovernanceType @map("item_type")
+  
+  // Tool/Policy details
+  toolName      String?        @map("tool_name")
+  vendor        String?
+  policyTitle   String?        @map("policy_title")
+  
+  // Approval workflow
+  status        ApprovalStatus @default(PENDING)
+  approvedBy    String?        @map("approved_by")
+  approvedAt    DateTime?      @map("approved_at")
+  
+  // Risk assessment
+  riskLevel     RiskLevel      @map("risk_level")
+  riskFactors   Json?          @map("risk_factors")
+  mitigations   String?
+  
+  // Course integration
+  courseCode    String?        @map("course_code")
+  syllabusClauses String?      @map("syllabus_clauses")
+  
+  createdAt     DateTime       @default(now()) @map("created_at")
+  reviewDate    DateTime?      @map("review_date")
+  
+  @@map("ai_governance_items")
+}
+
+// FVT/GE Operations (Financial Value Transparency / Gainful Employment)
+model FVTGEItem {
+  id            String      @id @default(cuid())
+  institutionId String      @map("institution_id")
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  
+  // Program details
+  cipCode       String      @map("cip_code") // Classification of Instructional Programs
+  programName   String      @map("program_name")
+  credentialLevel String    @map("credential_level") // Certificate, Associate, Bachelor, etc.
+  
+  // Financial metrics
+  programCosts  Json        @map("program_costs") // Tuition, fees, books, etc.
+  debtLevels    Json?       @map("debt_levels") // Median debt, percentage with debt
+  earnings      Json?       @map("earnings") // Employment rates, median earnings
+  
+  // Disclosure tracking
+  disclosureStatus String   @map("disclosure_status") // DRAFT, PUBLISHED, SUBMITTED
+  disclosureUrl    String?  @map("disclosure_url")
+  disclosureDate   DateTime? @map("disclosure_date")
+  
+  // NSLDS integration
+  nsldsPrepared    Boolean  @default(false) @map("nslds_prepared")
+  thresholdStatus  String?  @map("threshold_status") // PASSING, WARNING, FAILING
+  
+  reportingPeriod  String   @map("reporting_period") // e.g., "2024-2025"
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  
+  @@map("fvt_ge_items")
+}
+
+// Subscription management
+model SubscriptionTier {
+  id            String      @id @default(cuid())
+  institutionId String      @unique @map("institution_id")
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  
+  tier          Tier
+  
+  // Features & limits
+  maxConnectors    Int      @default(1) @map("max_connectors")
+  maxUsers         Int      @default(5) @map("max_users")
+  ssoEnabled       Boolean  @default(false) @map("sso_enabled")
+  vpatCredits      Int      @default(0) @map("vpat_credits")
+  
+  // Billing
+  billingCycle     BillingCycle
+  currentPeriodStart DateTime @map("current_period_start")
+  currentPeriodEnd   DateTime @map("current_period_end")
+  
+  status           SubscriptionStatus @default(ACTIVE)
+  
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  
+  @@map("subscription_tiers")
+}
+
+// Enums
+enum Tier {
+  CORE
+  PRO
+  ENTERPRISE
+}
+
+enum BillingCycle {
+  MONTHLY
+  ANNUAL
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum EvidenceCategory {
+  ACCESSIBILITY
+  CYBER_SECURITY
+  AI_GOVERNANCE
+  FVT_GE
+  POLICY_DOCUMENT
+  TRAINING_RECORD
+  AUDIT_LOG
+  ATTESTATION
+}
+
+enum ScanType {
+  WEB
+  LMS
+  DOCUMENT
+  API
+}
+
+enum WCAGLevel {
+  A
+  AA
+  AAA
+}
+
+enum AIGovernanceType {
+  APPROVED_TOOL
+  POLICY_DOCUMENT
+  COURSE_STATEMENT
+  RISK_ASSESSMENT
+  TRAINING_RECORD
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  UNDER_REVIEW
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  TRIALING
 }
