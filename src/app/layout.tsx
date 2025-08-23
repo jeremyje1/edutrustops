@@ -3,32 +3,39 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Footer } from '@/components/Footer';
 
+// Derive a base URL at build time from env, with a safe fallback.
+// This prevents hard-coding a domain (e.g. platform.edutrustops.org) before DNS / Vercel configuration is complete.
+// Determine canonical base URL: prefer env (set per deployment), fallback to target platform domain.
+// Using globalThis avoids direct TS dependency on Node's process type in edge/runtime contexts.
+const BASE_URL: string = (globalThis as any)?.process?.env?.NEXT_PUBLIC_BASE_URL || 'https://platform.edutrustops.org';
+
 export const metadata = {
-  metadataBase: new URL('https://platform.edutrustops.org'),
+  metadataBase: new URL(BASE_URL),
   title: 'EduTrustOps™ | Accessibility, Cyber, AI Governance & FVT/GE Operations',
-  description: 'Turnkey Trust Operations platform for districts and colleges: ADA Title II accessibility, NIST CSF cyber baseline, AI governance, and FVT/GE program transparency with an audit-ready Evidence Binder.',
+  description:
+    'Turnkey Trust Operations platform for districts and colleges: ADA Title II accessibility, NIST CSF cyber baseline, AI governance, and FVT/GE program transparency with an audit-ready Evidence Binder.',
   openGraph: {
     title: 'EduTrustOps™ | Trust Operations for Education',
     description: 'Prove accessibility, reduce cyber risk, govern AI, and meet FVT/GE deadlines in one platform.',
-    url: 'https://platform.edutrustops.org',
+    url: BASE_URL,
     siteName: 'EduTrustOps',
     locale: 'en_US',
     type: 'website',
-    images: ['/og-card.png'],
+  images: [`${BASE_URL.replace(/\/$/, '')}/og-card.png`],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'EduTrustOps™ Trust Operations Platform',
     description: 'Accessibility, Cyber, AI Governance, Value Transparency in one system.',
-    images: ['/og-card.png'],
+  images: [`${BASE_URL.replace(/\/$/, '')}/og-card.png`],
   },
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
       <body>
@@ -40,7 +47,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'EduTrustOps',
-              url: 'https://platform.edutrustops.org',
+              url: BASE_URL,
               description: 'Turnkey Trust Operations for education: accessibility, cyber, AI governance, FVT/GE.',
               sameAs: [],
               productSupported: 'K-12 Districts, Community Colleges, Universities',
